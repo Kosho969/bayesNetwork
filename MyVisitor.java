@@ -3,6 +3,7 @@ import java.util.ArrayList;
 
 public class MyVisitor extends BayesBaseVisitor<String> {
 	ArrayList<Node> nodes = new ArrayList<Node>();
+	double probability = 0.0;
 
 	public String visitProgram( BayesParser.ProgramContext ctx) { 
 		return visitChildren(ctx); 
@@ -13,7 +14,7 @@ public class MyVisitor extends BayesBaseVisitor<String> {
 	}
 
 	public String visitLiterals(BayesParser.LiteralsContext ctx) {
-		//System.out.println(ctx.getChildCount());
+		// START for creating new node and adding the relations
 		ArrayList<String> relations = new ArrayList<String>();
 		boolean add = true;
 		if (ctx.getChildCount()> 1){
@@ -34,25 +35,45 @@ public class MyVisitor extends BayesBaseVisitor<String> {
 					}
 				}
 			}
+			String text =ctx.getChild(0).getText();
+			if (text.contains("!")){
+				text = text.split("!")[1];
+			}
 			for (Node node: nodes){
-				if(node.getIdentifier().equals(ctx.getChild(0).getText())){
+				if(node.getIdentifier().equals(text)){
 					add = false;
 					break;
 				}
 				add = true;
 			}
 			if(add == true){
-				nodes.add(new Node(ctx.getChild(0).getText(), relations));
+				nodes.add(new Node(text, relations));
 			}
 		}
 		else{
-			nodes.add(new Node(ctx.getText()));
+			String text = ctx.getText();
+			if (text.contains("!")){
+				text = text.split("!")[1];
+			}
+			for (Node node: nodes){
+				if(node.getIdentifier().equals(text)){
+					add = false;
+					break;
+				}
+				add = true;
+			}
+			if(add == true){
+				nodes.add(new Node(text));
+			}
 		}
-		System.out.println(nodes.size());
+		// End of creating new node and adding dependencies if there are. 
+		
 		return visitChildren(ctx); 
 	}
 
 	public String visitExpr2( BayesParser.Expr2Context ctx) { 
+		System.out.println(ctx.getText());
+		probability = Double.parseDouble(ctx.getText());
 		return visitChildren(ctx); 
 	}
 

@@ -40,7 +40,7 @@ public class Node{
 		this.dependencies.add(dependency);
 	}
 	
-	public void addProbability (String key, float value){
+	public void addProbability (String key, double value){
 		this.probabilities.put(key,value);
 	}
 	  @Override
