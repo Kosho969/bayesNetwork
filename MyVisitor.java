@@ -1,4 +1,8 @@
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 
 public class MyVisitor extends BayesBaseVisitor<String> {
@@ -10,13 +14,21 @@ public class MyVisitor extends BayesBaseVisitor<String> {
 	}
 
 	public String visitExpressions( BayesParser.ExpressionsContext ctx) { 
+		probability = Double.parseDouble(ctx.getChild(2).getText());
 		return visitChildren(ctx); 
 	}
 
 	public String visitLiterals(BayesParser.LiteralsContext ctx) {
 		// START for creating new node and adding the relations
-		ArrayList<String> relations = new ArrayList<String>();
+		Set<String> relations = new HashSet<String>();
 		boolean add = true;
+		Map<Set<String>,Object> probabilities = new HashMap<Set<String>, Object>();
+		String currentIdentifier = "";
+		if(ctx.getChild(0).getText().contains("!")) 		
+			currentIdentifier = ctx.getChild(0).getText().split("!")[1];
+		else{
+			currentIdentifier = ctx.getChild(0).getText();
+		}
 		if (ctx.getChildCount()> 1){
 			
 			
@@ -49,6 +61,13 @@ public class MyVisitor extends BayesBaseVisitor<String> {
 			if(add == true){
 				nodes.add(new Node(text, relations));
 			}
+			else{
+				for (Node node: nodes){
+					if(node.getIdentifier().equals(text)){
+						node.getDependencies().addAll(relations);
+					}
+				}
+			}
 		}
 		else{
 			String text = ctx.getText();
@@ -68,12 +87,51 @@ public class MyVisitor extends BayesBaseVisitor<String> {
 		}
 		// End of creating new node and adding dependencies if there are. 
 		
+		// Insert probabilities
+		System.out.println("C,D".contains("D"));
+		Node currentNode = null;
+		for(Node node: nodes){
+			if (node.getIdentifier().equals(currentIdentifier)){
+				currentNode = node;
+				break;
+			}
+		}
+		probabilities = currentNode.getProbabilities();
+		relations = currentNode.getDependencies();
+		Set<String> setA = new HashSet<String>();
+		String text = ctx.getText();
+		boolean existance = false;
+		if (ctx.getChildCount()> 1){
+			
+			
+			for (int i = 0; i < ctx.getChild(2).getChildCount(); i++){
+				String child = ctx.getChild(2).getChild(i).getText();
+				if (!child.equals(",")){
+					setA.add(child);
+				}
+			}
+		}
+		else{
+			setA.add(text);
+		}
+		if((setA.size()== relations.size() || (setA.size()-1 == relations.size())) ) {
+			for (Set<String> key: probabilities.keySet()){
+				if(key.containsAll(setA)){
+					existance = true;
+					break;
+				}
+				existance = false;
+			}
+			if(existance == false){
+				currentNode.addProbability(setA, probability );
+			}
+			
+		}
+		
 		return visitChildren(ctx); 
 	}
 
 	public String visitExpr2( BayesParser.Expr2Context ctx) { 
-		System.out.println(ctx.getText());
-		probability = Double.parseDouble(ctx.getText());
 		return visitChildren(ctx); 
 	}
 

@@ -134,6 +134,7 @@ class TabbedPanel extends JFrame
         // Este es el visitador del análisis semántico
         MyVisitor visitor = new MyVisitor();
 		visitor.visit(tree);
+		System.out.println(visitor.nodes);
 
 		// TODO: Agregar pane para output de código intermedio
 

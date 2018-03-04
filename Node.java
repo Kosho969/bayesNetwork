@@ -1,22 +1,30 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class Node{
     String identifier;
-    Map probabilities ; 
-    ArrayList<String> dependencies ;
+    Map<Set<String>,Object> probabilities ; 
+    Set<String> dependencies ;
 
     public Node(String id) {
         this.identifier = id;
-        this.probabilities = new HashMap();
-        this.dependencies = new ArrayList<String>(); 
+        this.probabilities = new HashMap<Set<String>, Object>();
+        this.dependencies = new HashSet<String>(); 
+    }
+    
+    public Node() {
+        this.identifier = "";
+        this.probabilities = new HashMap<Set<String>, Object>();
+        this.dependencies = new HashSet<String>();
     }
     
 
-	public Node(String id, ArrayList<String> dependencies) {
+	public Node(String id,   Set<String> dependencies) {
         this.identifier = id;
-        this.probabilities = new HashMap();
+        this.probabilities = new HashMap<Set<String>, Object>();
         this.dependencies = dependencies; 
     }
 
@@ -28,11 +36,11 @@ public class Node{
 		this.identifier = identifier;
 	}
 
-	public Map getProbabilities() {
+	public Map<Set<String>, Object> getProbabilities() {
 		return probabilities;
 	}
 
-	public ArrayList<String> getDependencies() {
+	public   Set<String>getDependencies() {
 		return dependencies;
 	}
 
@@ -40,12 +48,14 @@ public class Node{
 		this.dependencies.add(dependency);
 	}
 	
-	public void addProbability (String key, double value){
+	public void addProbability (Set<String> key, double value){
 		this.probabilities.put(key,value);
 	}
 	  @Override
 	public String toString() {
-		return "Node [identifier=" + identifier + ", probabilities="
-				+ probabilities + ", dependencies=" + dependencies + "]";
+		return "Node:\n"
+				+ "ID: "+ identifier + "\n"
+				+ "Probabilities: "+ probabilities + "\n"
+				+ "Dependencies: "+ dependencies + "\n \n";
 	}
 }
